@@ -1,12 +1,25 @@
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template: 1fr min-content 1fr / 1fr;
 }
 
 .card {
   padding: 2em;
+}
+
+.grid {
+  width: min(calc(100vh - 282px), calc(100vw - 32px));
+  height: min(calc(100vh - 282px), calc(100vw - 32px));
+  margin: 0 auto;
+  display: grid;
+  gap: 2px;
 }
 
 .footer {

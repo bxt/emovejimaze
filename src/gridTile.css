@@ -1,0 +1,11 @@
+.gridTile {
+  border-radius: 6px;
+}
+
+.gridTileWall {
+  fill: rgb(75, 41, 7);
+}
+
+.gridTileFloor {
+  fill: rgb(255, 235, 197);
+}
