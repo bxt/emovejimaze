@@ -1,5 +1,6 @@
 .gridTile {
   border-radius: 6px;
+  vertical-align: middle;
 }
 
 .gridTileWall {

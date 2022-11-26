@@ -1,24 +1,26 @@
 import { useState } from 'preact/hooks';
+import { Fragment } from 'preact/jsx-runtime';
 import './app.css';
 import { CharacterChooser } from './characterChooser';
 import { GridTile } from './gridTile';
-
-const GRID_WIDTH = 7;
-const GRID_HEIGHT = 7;
-const gridData = [
-  [3, 3, 2, 10, 2, 10, 6],
-  [5, 12, 1, 5, 10, 2, 5],
-  [1, 9, 1, 9, 2, 5, 4],
-  [5, 10, 9, 4, 8, 12, 5],
-  [1, 9, 8, 12, 4, 5, 4],
-  [9, 9, 6, 1, 12, 5, 12],
-  [9, 8, 8, 12, 8, 10, 12],
-];
-const placeable = 8;
+import { useGrid } from './useGrid';
 
 export function App() {
   const [character, setCharacter] = useState('🧖🏽');
   const [characterChooserOpen, setCharacterChooserOpen] = useState(false);
+  const {
+    gridWidth,
+    gridHeight,
+    isRowMovable,
+    isColMovable,
+    placeable,
+    gridData,
+    rotatePlaceable,
+    moveColUp,
+    moveColDown,
+    moveRowLeft,
+    moveRowRight,
+  } = useGrid();
 
   return (
     <div class="layoutGrid">
@@ -45,14 +47,61 @@ export function App() {
         <div
           class="grid"
           style={{
-            gridTemplate: `repeat(${GRID_HEIGHT}, 1fr) / repeat(${GRID_WIDTH}, 1fr)`,
+            gridTemplate: `1fr repeat(${gridHeight}, 2fr) 1fr / 1fr repeat(${gridWidth}, 2fr) 1fr`,
           }}
         >
-          {[...Array(GRID_HEIGHT).keys()].map((y) =>
-            [...Array(GRID_WIDTH).keys()].map((x) => (
-              <GridTile key={`${x}-${y}`} number={gridData[y][x]} />
-            )),
-          )}
+          <>
+            <div />
+            {[...Array(gridWidth).keys()].map((x) =>
+              isColMovable(x) ? (
+                <button key={x} onClick={() => moveColDown(x)}>
+                  v
+                </button>
+              ) : (
+                <div key={x} />
+              ),
+            )}
+            <div />
+          </>
+          {[...Array(gridHeight).keys()].map((y) => (
+            <Fragment key={y}>
+              {isRowMovable(y) ? (
+                <button onClick={() => moveRowRight(y)}>&gt;</button>
+              ) : (
+                <div />
+              )}
+              {[...Array(gridWidth).keys()].map((x) => (
+                <Fragment key={`${x}-${y}`}>
+                  <div style={{ position: 'relative' }}>
+                    {x === 0 && y === 0 ? (
+                      <button class="placeable" onClick={rotatePlaceable}>
+                        <GridTile number={placeable} />
+                      </button>
+                    ) : null}
+                    <GridTile number={gridData[y][x]} />
+                  </div>
+                </Fragment>
+              ))}
+              {isRowMovable(y) ? (
+                <button onClick={() => moveRowLeft(y)}>&lt;</button>
+              ) : (
+                <div />
+              )}
+            </Fragment>
+          ))}
+          <>
+            <div />
+            {[...Array(gridWidth).keys()].map((x) =>
+              isColMovable(x) ? (
+                <button key={x} onClick={() => moveColUp(x)}>
+                  ∧
+                </button>
+              ) : (
+                <div key={x} />
+              ),
+            )}
+            <div />
+          </>
         </div>
       )}
       <footer class="footer">
