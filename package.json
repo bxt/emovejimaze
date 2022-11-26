@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "format": "eslint --fix .",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
