@@ -1,8 +1,8 @@
-import { useState } from 'preact/hooks'
-import './app.css'
+import { useState } from 'preact/hooks';
+import './app.css';
 
 export function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -11,13 +11,13 @@ export function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Hello, world!
-        </p>
+        <p>Hello, world!</p>
       </div>
       <footer class="footer">
-        &copy; 2022 by <a href="http://bernhardhaeussner.de/">Bernhard Häussner</a>, code on <a href="https://github.com/bxt/emovejimaze">GitHub</a>.
+        &copy; 2022 by{' '}
+        <a href="http://bernhardhaeussner.de/">Bernhard Häussner</a>, code on{' '}
+        <a href="https://github.com/bxt/emovejimaze">GitHub</a>.
       </footer>
     </>
-  )
+  );
 }
