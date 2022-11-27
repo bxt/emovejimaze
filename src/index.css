@@ -46,12 +46,16 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button:hover:not(:disabled) {
   border-color: #646cff;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+button:disabled {
+  color: rgb(39, 21, 3);
+  cursor: default;
 }
 button[data-selected="true"] {
   background-color: rgb(153, 115, 73);

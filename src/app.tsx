@@ -14,12 +14,20 @@ export function App() {
     isRowMovable,
     isColMovable,
     placeable,
+    isPlaceableRotatable,
     gridData,
     rotatePlaceable,
     moveColUp,
     moveColDown,
     moveRowLeft,
     moveRowRight,
+    isRowMovableLeft,
+    isRowMovableRight,
+    isColMovableUp,
+    isColMovableDown,
+    player,
+    isPlayerMovableTo,
+    movePlayerTo,
   } = useGrid();
 
   return (
@@ -54,7 +62,11 @@ export function App() {
             <div />
             {[...Array(gridWidth).keys()].map((x) =>
               isColMovable(x) ? (
-                <button key={x} onClick={() => moveColDown(x)}>
+                <button
+                  key={x}
+                  onClick={() => moveColDown(x)}
+                  disabled={!isColMovableDown(x)}
+                >
                   v
                 </button>
               ) : (
@@ -66,7 +78,12 @@ export function App() {
           {[...Array(gridHeight).keys()].map((y) => (
             <Fragment key={y}>
               {isRowMovable(y) ? (
-                <button onClick={() => moveRowRight(y)}>&gt;</button>
+                <button
+                  onClick={() => moveRowRight(y)}
+                  disabled={!isRowMovableRight(y)}
+                >
+                  &gt;
+                </button>
               ) : (
                 <div />
               )}
@@ -74,16 +91,33 @@ export function App() {
                 <Fragment key={`${x}-${y}`}>
                   <div style={{ position: 'relative' }}>
                     {x === 0 && y === 0 ? (
-                      <button class="placeable" onClick={rotatePlaceable}>
+                      <button
+                        class="placeable"
+                        onClick={rotatePlaceable}
+                        disabled={!isPlaceableRotatable()}
+                      >
                         <GridTile item={placeable} />
                       </button>
                     ) : null}
-                    <GridTile item={gridData[y][x]} />
+                    {player.x === x && player.y === y ? (
+                      <div class="player">{character}</div>
+                    ) : null}
+                    <button
+                      disabled={!isPlayerMovableTo({ x, y })}
+                      onClick={() => movePlayerTo({ x, y })}
+                    >
+                      <GridTile item={gridData[y][x]} />
+                    </button>
                   </div>
                 </Fragment>
               ))}
               {isRowMovable(y) ? (
-                <button onClick={() => moveRowLeft(y)}>&lt;</button>
+                <button
+                  onClick={() => moveRowLeft(y)}
+                  disabled={!isRowMovableLeft(y)}
+                >
+                  &lt;
+                </button>
               ) : (
                 <div />
               )}
@@ -93,7 +127,11 @@ export function App() {
             <div />
             {[...Array(gridWidth).keys()].map((x) =>
               isColMovable(x) ? (
-                <button key={x} onClick={() => moveColUp(x)}>
+                <button
+                  key={x}
+                  onClick={() => moveColUp(x)}
+                  disabled={!isColMovableUp(x)}
+                >
                   ∧
                 </button>
               ) : (

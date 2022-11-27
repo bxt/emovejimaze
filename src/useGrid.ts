@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 
 export type GridItem = {
   number: number;
@@ -74,12 +74,67 @@ const initialGridData: GridItem[][] = [
 ];
 const initialPlaceable: GridItem = { number: 6, target: '🪲' };
 
+type Moving = 'player' | 'grid';
+
 const isRowMovable = (y: number): boolean => y % 2 === 1;
 const isColMovable = (x: number): boolean => x % 2 === 1;
+
+const offsets = [
+  { x: -1, y: 0 },
+  { x: 0, y: -1 },
+  { x: 1, y: 0 },
+  { x: 0, y: 1 },
+];
+
+const isInsideGrid = ({ x, y }: { x: number; y: number }) =>
+  x >= 0 && y >= 0 && x < gridWidth && y < gridHeight;
 
 export const useGrid = () => {
   const [placeable, setPlaceable] = useState(initialPlaceable);
   const [gridData, setGridData] = useState(initialGridData);
+  const [player, setPlayer] = useState({ x: 0, y: 0, target: '🏺' });
+  const [moving, setMoving] = useState<Moving>('grid');
+
+  const playerReachableFields = useMemo(() => {
+    const reachable = new Set<string>();
+    const toCheck = [{ x: player.x, y: player.y }];
+
+    while (toCheck.length > 0) {
+      const check = toCheck.pop();
+      if (check === undefined) throw new Error('Popping from an empty stack!?');
+
+      const checkString = `${check.x}-${check.y}`;
+      if (!reachable.has(checkString)) {
+        reachable.add(checkString);
+
+        const number = gridData[check.y][check.x].number;
+
+        offsets.forEach(({ x, y }, i) => {
+          const neighbor = { x: check.x + x, y: check.y + y };
+
+          if (((number >> i) & 1) === 0 && isInsideGrid(neighbor)) {
+            const neighborNumber = gridData[neighbor.y][neighbor.x].number;
+            if (((neighborNumber >> (i + 2) % 4) & 1) === 0) {
+              toCheck.push(neighbor);
+            }
+          }
+        });
+      }
+    }
+
+    return reachable;
+  }, [player, gridData]);
+
+  const isRowMovableLeft = (y: number): boolean =>
+    moving === 'grid' && isRowMovable(y);
+  const isRowMovableRight = (y: number): boolean =>
+    moving === 'grid' && isRowMovable(y);
+  const isColMovableUp = (x: number): boolean =>
+    moving === 'grid' && isColMovable(x);
+  const isColMovableDown = (x: number): boolean =>
+    moving === 'grid' && isColMovable(x);
+
+  const isPlaceableRotatable = (): boolean => moving === 'grid';
 
   const rotatePlaceable = (): void => {
     setPlaceable(({ number, target }) => ({
@@ -102,6 +157,15 @@ export const useGrid = () => {
       ),
     );
     setPlaceable(newPlaceable);
+
+    if (player.x === x) {
+      setPlayer((player) => ({
+        ...player,
+        y: (player.y - 1 + gridHeight) % gridHeight,
+      }));
+    }
+
+    setMoving('player');
   };
 
   const moveColDown = (x: number): void => {
@@ -121,6 +185,15 @@ export const useGrid = () => {
       ),
     );
     setPlaceable(newPlaceable);
+
+    if (player.x === x) {
+      setPlayer((player) => ({
+        ...player,
+        y: (player.y + 1) % gridHeight,
+      }));
+    }
+
+    setMoving('player');
   };
 
   const moveRowLeft = (y: number): void => {
@@ -131,6 +204,15 @@ export const useGrid = () => {
       ),
     );
     setPlaceable(newPlaceable);
+
+    if (player.y === y) {
+      setPlayer((player) => ({
+        ...player,
+        x: (player.x - 1 + gridWidth) % gridWidth,
+      }));
+    }
+
+    setMoving('player');
   };
 
   const moveRowRight = (y: number): void => {
@@ -143,6 +225,23 @@ export const useGrid = () => {
       ),
     );
     setPlaceable(newPlaceable);
+
+    if (player.y === y) {
+      setPlayer((player) => ({
+        ...player,
+        x: (player.x + 1) % gridWidth,
+      }));
+    }
+
+    setMoving('player');
+  };
+
+  const isPlayerMovableTo = ({ x, y }: { x: number; y: number }): boolean =>
+    moving === 'player' && playerReachableFields.has(`${x}-${y}`);
+
+  const movePlayerTo = ({ x, y }: { x: number; y: number }): void => {
+    setPlayer((player) => ({ ...player, x, y }));
+    setMoving('grid');
   };
 
   return {
@@ -153,9 +252,17 @@ export const useGrid = () => {
     placeable,
     gridData,
     rotatePlaceable,
+    isPlaceableRotatable,
     moveColUp,
     moveColDown,
     moveRowLeft,
     moveRowRight,
+    isRowMovableLeft,
+    isRowMovableRight,
+    isColMovableUp,
+    isColMovableDown,
+    player,
+    isPlayerMovableTo,
+    movePlayerTo,
   } as const;
 };
