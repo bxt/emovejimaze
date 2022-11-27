@@ -100,14 +100,15 @@ export function App() {
                         <GridTile item={placeable} />
                       </button>
                     ) : null}
-                    {player.x === x && player.y === y ? (
-                      <div class="player">{character}</div>
-                    ) : null}
+
                     <button
                       disabled={!isPlayerMovableTo({ x, y })}
                       onClick={() => movePlayerTo({ x, y })}
                     >
                       <GridTile item={gridData[y][x]} />
+                      {player.x === x && player.y === y ? (
+                        <div class="player">{character}</div>
+                      ) : null}
                     </button>
                   </div>
                 </Fragment>
