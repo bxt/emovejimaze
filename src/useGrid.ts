@@ -92,8 +92,20 @@ const isInsideGrid = ({ x, y }: { x: number; y: number }) =>
 export const useGrid = () => {
   const [placeable, setPlaceable] = useState(initialPlaceable);
   const [gridData, setGridData] = useState(initialGridData);
-  const [player, setPlayer] = useState({ x: 0, y: 0, target: '🏺' });
+  const [player, setPlayer] = useState({ x: 0, y: 0, target: '🏺', score: 0 });
   const [moving, setMoving] = useState<Moving>('grid');
+
+  const pickTarget = () => {
+    const allTargets = gridData
+      .flatMap((row) => row.map((e) => e.target))
+      .filter((x): x is string => !!x);
+    const availableTargets = allTargets.filter(
+      (target) => target !== player.target,
+    );
+    return availableTargets[
+      Math.floor(Math.random() * availableTargets.length)
+    ];
+  };
 
   const playerReachableFields = useMemo(() => {
     const reachable = new Set<string>();
@@ -241,6 +253,15 @@ export const useGrid = () => {
 
   const movePlayerTo = ({ x, y }: { x: number; y: number }): void => {
     setPlayer((player) => ({ ...player, x, y }));
+
+    if (player.target === gridData[y][x].target) {
+      setPlayer((player) => ({
+        ...player,
+        score: player.score + 1,
+        target: pickTarget(),
+      }));
+    }
+
     setMoving('grid');
   };
 

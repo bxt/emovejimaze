@@ -38,7 +38,8 @@ export function App() {
           <p>
             <button onClick={() => setCharacterChooserOpen(true)}>
               {character}
-            </button>
+            </button>{' '}
+            → {player.target} ({player.score})
           </p>
         )}
       </div>
