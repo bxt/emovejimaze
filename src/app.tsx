@@ -75,10 +75,10 @@ export function App() {
                   <div style={{ position: 'relative' }}>
                     {x === 0 && y === 0 ? (
                       <button class="placeable" onClick={rotatePlaceable}>
-                        <GridTile number={placeable} />
+                        <GridTile item={placeable} />
                       </button>
                     ) : null}
-                    <GridTile number={gridData[y][x]} />
+                    <GridTile item={gridData[y][x]} />
                   </div>
                 </Fragment>
               ))}

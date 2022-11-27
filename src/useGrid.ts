@@ -1,17 +1,78 @@
 import { useState } from 'preact/hooks';
 
+export type GridItem = {
+  number: number;
+  target?: string;
+};
+
 const gridWidth = 7;
 const gridHeight = 7;
-const initialGridData = [
-  [3, 3, 2, 10, 2, 10, 6],
-  [5, 12, 1, 5, 10, 2, 5],
-  [1, 9, 1, 9, 2, 5, 4],
-  [5, 10, 9, 4, 8, 12, 5],
-  [1, 9, 8, 12, 4, 5, 4],
-  [9, 9, 6, 1, 12, 5, 12],
-  [9, 8, 8, 12, 8, 10, 12],
+const initialGridData: GridItem[][] = [
+  [
+    { number: 3 },
+    { number: 3 },
+    { number: 2, target: '💌' },
+    { number: 10 },
+    { number: 2, target: '🏆' },
+    { number: 10 },
+    { number: 6 },
+  ],
+  [
+    { number: 5 },
+    { number: 12 },
+    { number: 1, target: '🐉' },
+    { number: 5 },
+    { number: 10 },
+    { number: 2, target: '🧙‍♂️' },
+    { number: 5 },
+  ],
+  [
+    { number: 1, target: '🗺' },
+    { number: 9 },
+    { number: 1, target: '👑' },
+    { number: 9 },
+    { number: 2, target: '🏺' },
+    { number: 5 },
+    { number: 4, target: '🦴' },
+  ],
+  [
+    { number: 5 },
+    { number: 10 },
+    { number: 9 },
+    { number: 4, target: '🧜‍♀️' },
+    { number: 8, target: '🧞' },
+    { number: 12 },
+    { number: 5 },
+  ],
+  [
+    { number: 1, target: '💍' },
+    { number: 9, target: '🕷' },
+    { number: 8, target: '🧳' },
+    { number: 12 },
+    { number: 4, target: '💎' },
+    { number: 5 },
+    { number: 4, target: '🗡' },
+  ],
+  [
+    { number: 9, target: '🪰' },
+    { number: 9 },
+    { number: 6, target: '🦖' },
+    { number: 1, target: '🦇' },
+    { number: 12, target: '🐁' },
+    { number: 5 },
+    { number: 12, target: '🦉' },
+  ],
+  [
+    { number: 9 },
+    { number: 8, target: '🧌' },
+    { number: 8, target: '🕯' },
+    { number: 12 },
+    { number: 8, target: '🦝' },
+    { number: 10 },
+    { number: 12 },
+  ],
 ];
-const initialPlaceable = 6;
+const initialPlaceable: GridItem = { number: 6, target: '🪲' };
 
 const isRowMovable = (y: number): boolean => y % 2 === 1;
 const isColMovable = (x: number): boolean => x % 2 === 1;
@@ -21,7 +82,10 @@ export const useGrid = () => {
   const [gridData, setGridData] = useState(initialGridData);
 
   const rotatePlaceable = (): void => {
-    setPlaceable((placeable) => (placeable >> 1) | ((placeable & 1) << 3));
+    setPlaceable(({ number, target }) => ({
+      number: (number >> 1) | ((number & 1) << 3),
+      target,
+    }));
   };
 
   const moveColUp = (x: number): void => {
